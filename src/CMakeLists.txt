@@ -237,7 +237,6 @@ set(bro_SRCS
     ${BISON_Parser_INPUT}
     ${CMAKE_CURRENT_BINARY_DIR}/DebugCmdConstants.h
     ${PLUGIN_INIT}
-    main.cc
     net_util.cc
     util.cc
     module_util.cc
@@ -355,8 +354,14 @@ if ( bro_HAVE_OBJECT_LIBRARIES )
     add_executable(bro ${bro_SRCS} ${bro_HEADERS} ${bro_SUBDIRS})
     target_link_libraries(bro ${brodeps} ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS})
 else ()
-    add_executable(bro ${bro_SRCS} ${bro_HEADERS})
-    target_link_libraries(bro ${bro_SUBDIRS} ${brodeps} ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS})
+    add_library(brofuzz STATIC ${bro_SRCS} ${bro_HEADERS})
+    target_link_libraries(brofuzz ${bro_SUBDIRS} ${brodeps} ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS})
+
+    add_executable(bro main.cc)
+    target_link_libraries(bro brofuzz ${bro_SUBDIRS} ${brodeps} ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS})
+
+    add_executable(fuzz_pcap fuzzpcap.cc onefile.cc)
+    target_link_libraries(fuzz_pcap brofuzz ${bro_SUBDIRS} ${brodeps} ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS})
 endif ()
 
 if ( NOT "${bro_LINKER_FLAGS}" STREQUAL "" )

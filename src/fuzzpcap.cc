@@ -490,7 +490,7 @@ static void find_old_comm_usages()
 	traverse_all(&cb);
 	}
 
-int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
 	{
 	std::set_new_handler(bro_new_handler);
 

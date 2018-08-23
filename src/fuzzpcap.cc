@@ -57,19 +57,18 @@ extern "C" {
 #include "file_analysis/Manager.h"
 #include "broxygen/Manager.h"
 #include "iosource/Manager.h"
+#include "broker/Manager.h"
 
 #include "binpac_bro.h"
 
 #include "3rdparty/sqlite3.h"
 
-#ifdef ENABLE_BROKER
-#include "broker/Manager.h"
-#endif
 
 Brofiler brofiler;
 
 static bool initialized = false;
 int fd;
+int old_comm_usage_count = 0;
 
 #ifndef HAVE_STRSEP
 extern "C" {
@@ -93,9 +92,7 @@ analyzer::Manager* analyzer_mgr = 0;
 file_analysis::Manager* file_mgr = 0;
 broxygen::Manager* broxygen_mgr = 0;
 iosource::Manager* iosource_mgr = 0;
-#ifdef ENABLE_BROKER
 bro_broker::Manager* broker_mgr = 0;
-#endif
 
 name_list prefixes;
 Stmt* stmts;
@@ -260,10 +257,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
             log_mgr = new logging::Manager();
             input_mgr = new input::Manager();
             file_mgr = new file_analysis::Manager();
-            
-#ifdef ENABLE_BROKER
-            broker_mgr = new bro_broker::Manager();
-#endif
+            broker_mgr = new bro_broker::Manager(true);
             
             plugin_mgr->InitPreScript();
             analyzer_mgr->InitPreScript();

@@ -268,7 +268,11 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/cmake DESTINATION share/bro
 ## Recurse on sub-directories
 
 add_subdirectory(aux/broker)
-set(brodeps ${brodeps} broker)
+if (ENABLE_STATIC_ONLY)
+  set(brodeps ${brodeps} broker_static)
+else ()
+  set(brodeps ${brodeps} broker)
+endif ()
 include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR}/aux/broker
                            ${CMAKE_CURRENT_BINARY_DIR}/aux/broker)
 include_directories(BEFORE ${CAF_INCLUDE_DIR_CORE})
